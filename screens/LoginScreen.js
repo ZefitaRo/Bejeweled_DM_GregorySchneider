@@ -1,120 +1,117 @@
 import React from 'react';
-import { Alert, TouchableOpacity, StyleSheet, Text, View, TextInput, Button } from 'react-native';
-import Header from '../Components/Header';
-import InputText from '../Components/InputText'
-import { theme } from '../core/theme';
-import { pseudoValidator, passwordValidator } from '../core/utils';
-import {connect} from "react-redux";
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
 
-class LoginScreen extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            pseudo: "",
-            password: ""
-        };
-    }
-
-    onLoginPressed () {
-        const pseudoError = pseudoValidator(this.state.pseudo);
-        const passwordError = passwordValidator(this.state.password);
-        if (pseudoError || passwordError) {
-            alert()
-            return;
-        }
-        const {users} = this.props
-        var userConnect = false
-        for(var i=0; i<users.length; i++){
-            if(users[i].pseudo == this.state.pseudo && users[i].password == this.state.password) {
-                userConnect = true
-                this.props.navigation.navigate('Dashboard', {username: users[i].name});
-            }
-        }
-        if(userConnect == false){
-            Alert.alert(
-                'Erreur',
-                'Le pseudo ou le mot de passe est incorrect',
-                [
-                    {text: 'OK', onPress: () => console.log('OK Pressed')},
-                ],
-                {cancelable: false},
-            );
-        }
-    }
-
-    render(){
-        var data = null;
-        var good = false
+export default class LoginScreen extends React.Component
+{
 
 
-
+    handleLogIn ()
+    {
+        console.log(`On se connecte`);
         const {navigate} = this.props.navigation;
-        return (
-            <View>
-                <Header title="Connexion"/>
+        navigate ('LoggedIn');
+    };
+    handleSignIn ()
+    {
+        console.log(`On s'inscrit'`);
+        const {navigate} = this.props.navigation;
+        navigate ('LoginScreen');
+    };
 
-                <InputText
-                    value={this.state.pseudo}
-                    toto={text => this.setState({ pseudo: text })}
-                />
-                <View class={styles.view}></View>
+
+
+    render()
+    {
+        const  {navigate} = this.props.navigation;
+        return (
+            <View style={styles.container}>
+
+                <Text style={styles.header}>Connexion</Text>
 
                 <TextInput
-                    label="Password"
-                    returnKeyType="done"
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 10 }}
-                    value={this.state.password}
-                    onChangeText={text => this.setState({ password: text })}
-                    secureTextEntry
+                    style={styles.input}
+                    placeholder="Email"
+                    /*value={this.email}
+                    onChangeText={setEmail}*/
+                    keyboardType="email-address"
                 />
-                <View class={styles.view}></View>
-
-                <Button onPress={() => this.onLoginPressed()} style={styles.button} title="Connexion"/>
-                <View style={styles.row}>
-                    <TouchableOpacity onPress={() => navigate('Registerscreen')}>
-                        <Text style={styles.link}>S'inscrire</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => navigate('ForgotPasswordscreen')}>
-                        <Text style={styles.link}>Mot de passe oublié</Text>
-                    </TouchableOpacity>
-                </View>
+                <Text></Text>
+                <TextInput
+                    secureTextEntry={true}
+                    style={styles.input}
+                    placeholder="Password"
+                    /*value={this.email}
+                    onChangeText={setEmail}*/
+                    /*keyboardType="password"*/
+                />
+                <Text></Text>
+                <TouchableOpacity style={styles.button_co} onPress={() => this.handleLogIn()}>
+                    <Text style={styles.buttonText_co}>Connexion</Text>
+                </TouchableOpacity>
+                <Text></Text>
+                <TouchableOpacity style={styles.button_in} onPress={() => this.handleSignIn()}>
+                    <Text style={styles.buttonText_in}>S'inscrire</Text>
+                </TouchableOpacity>
+                <StatusBar style="auto" />
             </View>
         );
-
     }
 
-};
+
+
+
+}
 
 const styles = StyleSheet.create({
-    forgotPassword: {
-        width: '100%',
-        alignItems: 'flex-end',
-        marginBottom: 24,
-    },
-    button: {
-        marginTop: 24,
-    },
-    row: {
-        flexDirection: 'row',
-        marginTop: 4,
-    },
-    label: {
-        color: theme.colors.secondary,
-    },
-    link: {
+    header: {
+        fontSize: 24,
         fontWeight: 'bold',
-        color: theme.colors.primary,
-        marginLeft: 10
+        marginBottom: 16,
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
     },
     input: {
-        backgroundColor: "white",
+        width: '100%',
+        height: 48,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        marginBottom: 16,
     },
-    view: {
-        height: 40
-    }
-});
+    button_co: {
+        width: '100%',
+        height: 48,
+        backgroundColor: 'blue',
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    button_in: {
+        width: '100%',
+        height: 48,
+        backgroundColor: 'white',
+        color: "",
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonText_co: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    buttonText_in: {
+        color: '#000',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
 
-const mapStateToProps = (state) => {
-    return state
-}
-export default connect(mapStateToProps)(LoginScreen)
+
+});

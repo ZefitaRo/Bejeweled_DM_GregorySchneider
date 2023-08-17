@@ -1,107 +1,135 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Alert, TextInput, Button} from 'react-native';
-import Header from '../Components/Header';
-import {
-    pseudoValidator,
-    passwordValidator,
-} from '../core/utils';
-import { connect } from 'react-redux'
+import { StatusBar } from 'expo-status-bar';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground} from 'react-native';
+import { BejeweledBackgroundImage } from '../tools/theme';
 
-class RegisterScreen extends React.Component {
-    constructor(props) {
-        super(props);
-        //initialise les states
-        this.state = {
-            pseudo: "",
-            password: "",
-        };
-    }
+export default class RegisterScreen extends React.Component
+{
 
-    alerte(){
-        Alert.alert(
-            'Erreur',
-            'Veuillez remplir correctement les champs',
-            [
-                {text: 'OK', onPress: () => console.log('OK Pressed')},
-            ],
-            {cancelable: false},
-        );
-    }
 
-    onSignUpPressed (){
-        console.log("click");
-        console.log(this.props)
-        const pseudoError = pseudoValidator(this.state.pseudo);
-        const passwordError = passwordValidator(this.state.password);
-        if (passwordError || pseudoError) {
-            this.alerte()
-            return;
-        } else {
-            const action = { type: "ADD_USER", value: {pseudo: this.state.pseudo, password: this.state.password} }
-            this.props.dispatch(action)
-            console.log(this.props)
-            this.props.navigation.navigate('Loginscreen')
-        }
-    };
-    render() {
+    handleSignUp ()
+    {
+        console.log(`On s'inscrit'`);
         const {navigate} = this.props.navigation;
+        navigate ('LoggedIn');
+    };
+    handleSignIn ()
+    {
+        console.log(`On retourne sur la page de connexion'`);
+        const {navigate} = this.props.navigation;
+        navigate ('LoginScreen');
+    };
+
+
+
+    render()
+    {
         return (
-            <View>
-                <Header title="Inscription"/>
-                <TextInput
-                    label="Pseudo"
-                    style={{ height: 40, borderColor: 'gray',  borderWidth: 1, margin: 10}}
-                    returnKeyType="next"
-                    value={this.state.pseudo}
-                    onChangeText={text => this.setState({ pseudo: text })}
-                />
+            <View style={styles.container}>
 
-                <View class={styles.view}></View>
+                <ImageBackground source={BejeweledBackgroundImage} resizeMode="cover" style={styles.background}>
+
+                <Text style={styles.header}>Inscription</Text>
 
                 <TextInput
-                    label="Mot de passe"
-                    style={{ height: 40, borderColor: 'gray', borderWidth: 1, margin: 10 }}
-                    returnKeyType="done"
-                    value={this.state.password}
-                    onChangeText={text => this.setState({ password: text })}
-                    secureTextEntry
+                    style={styles.input}
+                    placeholder="Nom"
+                    /*value={this.email}
+                    onChangeText={setEmail}*/
+                    keyboardType="email-address"
                 />
-                <View class={styles.view}></View>
-                <Button onPress={() => this.onSignUpPressed() } title="Inscription" style={styles.button}/>
-                <View style={styles.row}>
-                    <Text style={styles.label}>Déja inscrit ? </Text>
-                    <TouchableOpacity onPress={() => navigate('Loginscreen')}>
-                        <Text style={styles.link}>Connectez-vous</Text>
-                    </TouchableOpacity>
-                </View>
+                <Text></Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="E-Mail"
+                    /*value={this.email}
+                    onChangeText={setEmail}*/
+                    /*keyboardType="password"*/
+                />
+                <Text></Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Mot de passe"
+                    /*value={this.email}
+                    onChangeText={setEmail}*/
+                    /*keyboardType="password"*/
+                />
+                <Text></Text>
+                <Text></Text>
+                <TouchableOpacity style={styles.button_co} onPress={() => this.handleSignUp()}>
+                    <Text style={styles.buttonText_co}>Inscription</Text>
+                </TouchableOpacity>
+                <Text></Text>
+                <Text style={styles.buttonText_in}>Déjà inscrit? </Text>
+                <TouchableOpacity style={styles.button_in} onPress={() => this.handleSignIn()}>
+                    <Text style={styles.buttonText_in}>Connectez-vous</Text>
+                </TouchableOpacity>
+                <StatusBar style="auto" />
+                </ImageBackground>
+
             </View>
         );
     }
-};
+
+
+
+
+}
 
 const styles = StyleSheet.create({
-    label: {
-        color: '#600EE6',
-    },
-    button: {
-        marginTop: 24,
-    },
-    row: {
-        flexDirection: 'row',
-        marginTop: 4,
-    },
-    link: {
+    header: {
+        fontSize: 24,
         fontWeight: 'bold',
-        color: '#600EE6',
+        marginBottom: 16,
+    },
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 16,
+
+    },
+    background: {
+        width : "100%",
+        height : "100%",
     },
     input: {
-        backgroundColor: "#ffffff",
+        width: '100%',
+        height: 48,
+        padding: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        borderRadius: 4,
+        marginBottom: 16,
     },
-    view: {
-        height: 40
-    }
+    button_co: {
+        width: '100%',
+        height: 48,
+        backgroundColor: 'blue',
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    button_in: {
+        width: '100%',
+        height: 48,
+        backgroundColor: 'white',
+        color: "",
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonText_co: {
+        color: '#ffffff',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    buttonText_in: {
+        color: '#000',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+
+
 });
-const mapStateToProps = (state) => {
-    return state
-}
-export default connect(mapStateToProps)(RegisterScreen)

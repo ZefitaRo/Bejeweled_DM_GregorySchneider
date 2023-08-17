@@ -1,48 +1,34 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, TouchableOpacity, ImageBackground} from 'react-native';
-import { BejeweledBackgroundImage } from '../tools/theme';
+import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
 
-export default class HomeScreen extends React.Component
+export default class LoggedIn extends React.Component
 {
 
-    handleSignIn ()
-    {
-        console.log(`direction la page de connexion`);
-        const {navigate} = this.props.navigation;
-        navigate ('LoginScreen');
 
-    };
-    handleSignUp ()
+    handleLogOut ()
     {
+        console.log(`On se deconnecte`);
         const {navigate} = this.props.navigation;
-        console.log(`direction la page d'inscription`);
-        navigate ('RegisterScreen');
+        navigate ('Homescreen');
+    };
+
+    handleLogIn ()
+    {
+        console.log(`On se connecte`);
+        const {navigate} = this.props.navigation;
+        navigate ('LoggedIn');
     };
 
     render()
     {
-
-
         return (
-
             <View style={styles.container}>
-                <ImageBackground source={BejeweledBackgroundImage} resizeMode="cover" style={styles.background}>
-
-                <Text style={styles.header}>Connexion / Inscription</Text>
-                <TouchableOpacity style={styles.button_co} onPress={() => this.handleSignIn()}>
-                    <Text style={styles.buttonText_co}>Connexion</Text>
-                </TouchableOpacity>
-                <Text></Text>
-                <TouchableOpacity style={styles.button_in} onPress={() => this.handleSignUp()}>
-                    <Text style={styles.buttonText_in}>Inscription</Text>
+                <TouchableOpacity style={styles.button_in} onPress={() => this.handleLogOut()}>
+                    <Text style={styles.buttonText_in}>DÉCONNEXION</Text>
                 </TouchableOpacity>
                 <StatusBar style="auto" />
-
-                </ImageBackground>
-
             </View>
-
         );
     }
 
@@ -64,12 +50,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         padding: 16,
     },
-
-    background: {
-        width : "100%",
-        height : "100%",
-    },
-
     input: {
         width: '100%',
         height: 48,
