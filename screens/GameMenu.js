@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, Image, ScrollView, Dimensions, TouchableOpacity, ImageBackground} from 'react-native';
+import {StyleSheet, Text, View, Image, ScrollView, Dimensions, TouchableOpacity, ImageBackground, Button} from 'react-native';
+import { BejeweledBackgroundImage } from "../tools/theme";
 
 // Obtient la largeur de l'écran pour calculer la taille des images et l'espace autour de la grille
 const screenWidth = Dimensions.get('window').width;
@@ -25,7 +26,7 @@ export default class GameMenu extends React.Component {
         this.state = {
             gridData: this.generateGrid(),
             score: 0,
-            selectedFruit: null, // Nouvel état pour suivre la position du fruit sélectionné
+            selectedFruit: null,
         };
     }
 
@@ -54,13 +55,16 @@ export default class GameMenu extends React.Component {
         const { gridData } = this.state;
         let newScore = this.state.score;
 
+        // Vérification des alignements horizontaux
         for (let i = 0; i < gridData.length; i++) {
             let count = 1;
             for (let j = 1; j < gridData[i].length; j++) {
                 if (gridData[i][j].image === gridData[i][j - 1].image) {
                     count++;
                     if (count >= 3) {
-                        newScore += count * 100;
+                        if (count === 3) newScore += 100;
+                        else if (count === 4) newScore += 300;
+                        else if (count === 5) newScore += 1000;
                     }
                 } else {
                     count = 1;
@@ -68,13 +72,16 @@ export default class GameMenu extends React.Component {
             }
         }
 
+        // Vérification des alignements verticaux
         for (let j = 0; j < gridData[0].length; j++) {
             let count = 1;
             for (let i = 1; i < gridData.length; i++) {
                 if (gridData[i][j].image === gridData[i - 1][j].image) {
                     count++;
                     if (count >= 3) {
-                        newScore += count * 100;
+                        if (count === 3) newScore += 100;
+                        else if (count === 4) newScore += 300;
+                        else if (count === 5) newScore += 1000;
                     }
                 } else {
                     count = 1;
@@ -100,9 +107,23 @@ export default class GameMenu extends React.Component {
         }
     };
 
+    handleNewGame = () => {
+        this.setState({
+            gridData: this.generateGrid(),
+            score: 0,
+            selectedFruit: null,
+        });
+    };
+
+
     render() {
         return (
             <View style={styles.container}>
+                <ImageBackground source={BejeweledBackgroundImage} resizeMode = "cover" style = {styles.background}>
+                <View style={styles.newGameContainer}>
+                    <Button title="New Game" onPress={this.handleNewGame} />
+                </View>
+                <Text style={styles.scoreText}>Score: {this.state.score}</Text>
                 <View style={styles.gridContainer}>
                     {this.state.gridData.map((row, rowIndex) => (
                         <View key={rowIndex} style={styles.row}>
@@ -123,6 +144,7 @@ export default class GameMenu extends React.Component {
                         </View>
                     ))}
                 </View>
+            </ImageBackground>
             </View>
         );
     }
@@ -137,11 +159,30 @@ const styles = StyleSheet.create({
     gridContainer: {
         marginLeft: 10,
         marginRight: 10,
+        marginTop: 10, // Ajoutez une marge en haut de la grille
     },
     row: {
         flexDirection: 'row',
     },
     fruits: {
         margin: 1,
+    },
+    scoreText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10,
+        textAlign: 'center', // Centrez le texte horizontalement
+    },
+    newGameContainer: {
+        marginBottom: 10,
+        marginTop: 30, // Ajoutez une marge en haut du bouton
+        alignSelf: 'center', // Centre le bouton horizontalement
+        width: 150, // Définissez une largeur pour le bouton
+    },
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
