@@ -54,57 +54,136 @@ export default class GameMenu extends React.Component {
     checkAlignments = () => {
         const { gridData } = this.state;
         let newScore = this.state.score;
+        const alignments = [];
 
         // Vérification des alignements horizontaux
         for (let i = 0; i < gridData.length; i++) {
             let count = 1;
+            const currentAlignment = [];
+
             for (let j = 1; j < gridData[i].length; j++) {
                 if (gridData[i][j].image === gridData[i][j - 1].image) {
                     count++;
                     if (count >= 3) {
                         if (count === 3) newScore += 100;
                         else if (count === 4) newScore += 300;
-                        else if (count === 5) newScore += 1000;
+                        else if (count >= 5) newScore += 1000;
+
+                        // Ajouter les cellules à l'alignement
+                        currentAlignment.push({ row: i, col: j - count + 1 });
                     }
                 } else {
                     count = 1;
                 }
+            }
+
+            // Ajouter l'alignement courant à la liste des alignements
+            if (currentAlignment.length >= 3) {
+                alignments.push(currentAlignment);
             }
         }
 
         // Vérification des alignements verticaux
         for (let j = 0; j < gridData[0].length; j++) {
             let count = 1;
+            const currentAlignment = [];
+
             for (let i = 1; i < gridData.length; i++) {
                 if (gridData[i][j].image === gridData[i - 1][j].image) {
                     count++;
                     if (count >= 3) {
                         if (count === 3) newScore += 100;
                         else if (count === 4) newScore += 300;
-                        else if (count === 5) newScore += 1000;
+                        else if (count >= 5) newScore += 1000;
+
+                        // Ajouter les cellules à l'alignement
+                        currentAlignment.push({ row: i - count + 1, col: j });
                     }
                 } else {
                     count = 1;
                 }
             }
+
+            // Ajouter l'alignement courant à la liste des alignements
+            if (currentAlignment.length > 0) {
+                alignments.push(currentAlignment);
+            }
         }
 
         this.setState({ score: newScore });
+        return alignments;
     };
 
     handleFruitPress = (row, col) => {
-        const { gridData, selectedFruit } = this.state;
+        const { gridData, selectedFruit, isPaused } = this.state;
 
-        if (selectedFruit === null) {
-            // Aucun fruit n'est actuellement sélectionné
-            this.setState({ selectedFruit: { row, col } });
-        } else {
-            // Un fruit est déjà sélectionné, on l'échange avec le fruit actuel
-            this.swapFruits(row, col, selectedFruit.row, selectedFruit.col);
-            this.setState({ selectedFruit: null }, () => {
-                this.checkAlignments(); // Vérifie les alignements après l'échange
-            });
+        if (!isPaused) {
+            if (selectedFruit === null) {
+                // Aucun fruit n'est actuellement sélectionné
+                this.setState({ selectedFruit: { row, col } });
+            } else {
+                // Un fruit est déjà sélectionné, on l'échange avec le fruit actuel
+                const isAdjacent = Math.abs(selectedFruit.row - row) === 1 && selectedFruit.col === col ||
+                    Math.abs(selectedFruit.col - col) === 1 && selectedFruit.row === row;
+
+                if (isAdjacent) {
+                    this.swapFruits(row, col, selectedFruit.row, selectedFruit.col);
+
+                    // Vérifier si la permutation forme des alignements
+                    const alignments = this.checkAlignments();
+
+                    if (alignments.length > 0) {
+                        // Supprimer les alignements et décaler les images vers le bas
+                        this.removeAlignments(alignments);
+                    } else {
+                        // Annuler la permutation si elle ne forme pas d'alignements
+                        this.swapFruits(row, col, selectedFruit.row, selectedFruit.col);
+                    }
+
+                    this.setState({ selectedFruit: null });
+                }
+            }
         }
+    };
+
+    removeAlignments = (alignments) => {
+        const gridCopy = JSON.parse(JSON.stringify(this.state.gridData));
+
+        alignments.forEach(align => {
+            align.forEach(cell => {
+                gridCopy[cell.row][cell.col] = { image: null, selected: false };
+            });
+
+            // Supprimer les alignements horizontaux
+            for (let i = align[0].row; i >= 0; i--) {
+                if (gridCopy[i][align[0].col].image === null) {
+                    break;
+                }
+
+                gridCopy[i][align[0].col] = { image: null, selected: false };
+            }
+
+            // Remplir les cases du haut avec de nouvelles images aléatoires
+            for (let i = 0; i < align.length; i++) {
+                const randomIndex = Math.floor(Math.random() * fruitsImages.length);
+                gridCopy[i][align[0].col] = { image: fruitsImages[randomIndex], selected: false };
+            }
+
+            // Décaler les images vers le bas
+            for (let i = align[0].row - 1; i >= 0; i--) {
+                gridCopy[i + align.length] = gridCopy[i].map(cell => ({ ...cell }));
+            }
+        });
+
+        this.setState({ gridData: gridCopy }, () => {
+            // Vérifier si de nouveaux alignements se sont formés après les modifications
+            const newAlignments = this.checkAlignments();
+
+            if (newAlignments.length > 0) {
+                // Supprimer les nouveaux alignements et décaler les images vers le bas à nouveau
+                this.removeAlignments(newAlignments);
+            }
+        });
     };
 
     handleNewGame = () => {
@@ -115,13 +194,25 @@ export default class GameMenu extends React.Component {
         });
     };
 
+    handlePausePress = () => {
+        // Mettre en pause ou reprendre le jeu
+        this.setState((prevState) => ({
+            isPaused: !prevState.isPaused,
+        }));
+    };
+
 
     render() {
+        const { isPaused } = this.state;
+
         return (
             <View style={styles.container}>
                 <ImageBackground source={BejeweledBackgroundImage} resizeMode = "cover" style = {styles.background}>
                 <View style={styles.newGameContainer}>
-                    <Button title="New Game" onPress={this.handleNewGame} />
+                    <Button title="New Game" onPress={this.handleNewGame} disabled={isPaused} />
+                </View>
+                <View style={styles.PauseContainer}>
+                    <Button title={this.state.isPaused ? "Resume" : "Pause"} onPress={this.handlePausePress} />
                 </View>
                 <Text style={styles.scoreText}>Score: {this.state.score}</Text>
                 <View style={styles.gridContainer}>
@@ -136,7 +227,7 @@ export default class GameMenu extends React.Component {
                                         source={fruit.image}
                                         style={[
                                             styles.fruits,
-                                            { width: imageWidth, height: imageWidth, borderWidth: fruit.selected ? 2 : 0, borderColor: 'blue' },
+                                            { width: imageWidth, height: imageWidth, borderWidth: fruit.selected ? 2 : 0, borderColor: 'blue', opacity: isPaused ? 0 : 1 },
                                         ]}
                                     />
                                 </TouchableOpacity>
@@ -159,7 +250,7 @@ const styles = StyleSheet.create({
     gridContainer: {
         marginLeft: 10,
         marginRight: 10,
-        marginTop: 10, // Ajoutez une marge en haut de la grille
+        marginTop: 10,
     },
     row: {
         flexDirection: 'row',
@@ -171,13 +262,19 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
-        textAlign: 'center', // Centrez le texte horizontalement
+        textAlign: 'center',
     },
     newGameContainer: {
         marginBottom: 10,
-        marginTop: 30, // Ajoutez une marge en haut du bouton
-        alignSelf: 'center', // Centre le bouton horizontalement
-        width: 150, // Définissez une largeur pour le bouton
+        marginTop: 30,
+        alignSelf: 'center',
+        width: 150,
+    },
+    PauseContainer: {
+        marginBottom: 10,
+        marginTop: 30,
+        alignSelf: 'center',
+        width: 150,
     },
     background: {
         flex: 1,
