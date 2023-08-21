@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {StyleSheet, Text, View, TouchableOpacity, ImageBackground} from 'react-native';
-import { BejeweledBackgroundImage } from '../tools/theme';
+
 
 export default class HomeScreen extends React.Component
 {
@@ -27,19 +27,19 @@ export default class HomeScreen extends React.Component
         return (
 
             <View style={styles.container}>
-                <ImageBackground source={BejeweledBackgroundImage} resizeMode="cover" style={styles.background}>
+
 
                 <Text style={styles.header}>Connexion / Inscription</Text>
-                <TouchableOpacity style={styles.button_co} onPress={() => this.handleSignIn()}>
-                    <Text style={styles.buttonText_co}>Connexion</Text>
+                <TouchableOpacity style={styles.button_connexion} onPress={() => this.handleSignIn()}>
+                    <Text style={styles.buttonText_connexion}>Connexion</Text>
                 </TouchableOpacity>
                 <Text></Text>
-                <TouchableOpacity style={styles.button_in} onPress={() => this.handleSignUp()}>
-                    <Text style={styles.buttonText_in}>Inscription</Text>
+                <TouchableOpacity style={styles.button_inscription} onPress={() => this.handleSignUp()}>
+                    <Text style={styles.buttonText_inscription}>Inscription</Text>
                 </TouchableOpacity>
                 <StatusBar style="auto" />
 
-                </ImageBackground>
+
 
             </View>
 
@@ -65,11 +65,6 @@ const styles = StyleSheet.create({
         padding: 16,
     },
 
-    background: {
-        width : "100%",
-        height : "100%",
-    },
-
     input: {
         width: '100%',
         height: 48,
@@ -79,7 +74,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 16,
     },
-    button_co: {
+    button_connexion: {
         width: '100%',
         height: 48,
         backgroundColor: 'blue',
@@ -87,22 +82,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    button_in: {
+    button_inscription: {
         width: '100%',
         height: 48,
-        backgroundColor: 'white',
+        backgroundColor: 'purple',
         color: "",
         borderRadius: 4,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    buttonText_co: {
+    buttonText_connexion: {
         color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    buttonText_in: {
-        color: '#000',
+    buttonText_inscription: {
+        color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },

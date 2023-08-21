@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     buttonText_in: {
-        color: '#000',
+        color: 'blue',
         fontSize: 16,
         fontWeight: 'bold',
     },

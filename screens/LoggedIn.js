@@ -10,7 +10,7 @@ export default class LoggedIn extends React.Component
     {
         console.log(`On se deconnecte`);
         const {navigate} = this.props.navigation;
-        navigate ('Homescreen');
+        navigate ('HomeScreen');
     };
 
     handleLogIn ()
@@ -20,21 +20,27 @@ export default class LoggedIn extends React.Component
         navigate ('LoggedIn');
     };
 
+    handleGameMenu ()
+    {
+        console.log(`On se dirige vers le menu du jeu`);
+        const {navigate} = this.props.navigation;
+        navigate ('GameMenu');
+    };
+
     render()
     {
         return (
             <View style={styles.container}>
-                <TouchableOpacity style={styles.button_in} onPress={() => this.handleLogOut()}>
-                    <Text style={styles.buttonText_in}>DÉCONNEXION</Text>
+                <TouchableOpacity style={styles.button_menu_du_jeu} onPress={() => this.handleGameMenu()}>
+                    <Text style={styles.buttonText_Menu_du_jeu}>Menu du jeu</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.button_inscription} onPress={() => this.handleLogOut()}>
+                    <Text style={styles.buttonText_inscription}>DÉCONNEXION</Text>
                 </TouchableOpacity>
                 <StatusBar style="auto" />
             </View>
         );
     }
-
-
-
-
 }
 
 const styles = StyleSheet.create({
@@ -59,7 +65,7 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 16,
     },
-    button_co: {
+    button_connexion: {
         width: '100%',
         height: 48,
         backgroundColor: 'blue',
@@ -67,7 +73,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    button_in: {
+    button_inscription: {
         width: '100%',
         height: 48,
         backgroundColor: 'white',
@@ -76,13 +82,27 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    buttonText_co: {
+    button_menu_du_jeu: {
+        width: '100%',
+        height: 48,
+        backgroundColor: 'green',
+        color: "",
+        borderRadius: 4,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buttonText_connexion: {
         color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    buttonText_in: {
-        color: '#000',
+    buttonText_inscription: {
+        color: 'blue',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    buttonText_Menu_du_jeu: {
+        color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {StyleSheet, Text, View, TextInput, TouchableOpacity, ImageBackground} from 'react-native';
-import { BejeweledBackgroundImage } from '../tools/theme';
+
 
 export default class RegisterScreen extends React.Component
 {
@@ -27,7 +27,7 @@ export default class RegisterScreen extends React.Component
         return (
             <View style={styles.container}>
 
-                <ImageBackground source={BejeweledBackgroundImage} resizeMode="cover" style={styles.background}>
+
 
                 <Text style={styles.header}>Inscription</Text>
 
@@ -56,16 +56,16 @@ export default class RegisterScreen extends React.Component
                 />
                 <Text></Text>
                 <Text></Text>
-                <TouchableOpacity style={styles.button_co} onPress={() => this.handleSignUp()}>
-                    <Text style={styles.buttonText_co}>Inscription</Text>
+                <TouchableOpacity style={styles.button_connexion} onPress={() => this.handleSignUp()}>
+                    <Text style={styles.buttonText_connexion}>Inscription</Text>
                 </TouchableOpacity>
                 <Text></Text>
-                <Text style={styles.buttonText_in}>Déjà inscrit? </Text>
-                <TouchableOpacity style={styles.button_in} onPress={() => this.handleSignIn()}>
-                    <Text style={styles.buttonText_in}>Connectez-vous</Text>
+                <Text style={styles.buttonText_inscription}>Déjà inscrit? </Text>
+                <TouchableOpacity style={styles.button_inscription} onPress={() => this.handleSignIn()}>
+                    <Text style={styles.buttonText_connectez_vous}>Connectez-vous</Text>
                 </TouchableOpacity>
                 <StatusBar style="auto" />
-                </ImageBackground>
+
 
             </View>
         );
@@ -103,15 +103,15 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 16,
     },
-    button_co: {
+    button_connexion: {
         width: '100%',
         height: 48,
-        backgroundColor: 'blue',
+        backgroundColor: 'purple',
         borderRadius: 4,
         alignItems: 'center',
         justifyContent: 'center',
     },
-    button_in: {
+    button_inscription: {
         width: '100%',
         height: 48,
         backgroundColor: 'white',
@@ -120,13 +120,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    buttonText_co: {
+    buttonText_connexion: {
         color: '#ffffff',
         fontSize: 16,
         fontWeight: 'bold',
     },
-    buttonText_in: {
+    buttonText_inscription: {
         color: '#000',
+        fontSize: 16,
+        fontWeight: 'bold',
+    },
+    buttonText_connectez_vous: {
+        color: 'blue',
         fontSize: 16,
         fontWeight: 'bold',
     },
