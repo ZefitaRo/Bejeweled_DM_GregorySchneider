@@ -1,16 +1,38 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, TextInput,TouchableOpacity } from 'react-native';
+import {StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions, ImageBackground} from 'react-native';
+import * as SQLite from 'expo-sqlite'
+import {HomeScreenBackground, LoginButtonImage, MenuPanel, RegisterButtonImage, StartGameButton, DisconnectButton } from "../tools/theme";
+import * as Font from 'expo-font';
+
+const screenWidth = Dimensions.get('window').width;
 
 export default class LoggedIn extends React.Component
 {
+    state = {
+        fontLoaded: false, // Ajouter un état pour vérifier si la police est chargée
+    };
+
+    async componentDidMount(){
+        const db = SQLite.openDatabase("database.db");
+        db.transaction(tx => {
+            tx.executeSql("create table if not exists user (id integer primary key not null, name text, mdp text);");
+        });
+
+        // Charger la police ici
+        await Font.loadAsync({
+            'BubbleBobble': require('../assets/fonts/BubbleBobble.otf'),
+        });
+
+        this.setState({ fontLoaded: true }); // Mettre à jour l'état une fois que la police est chargée
+    }
 
 
     handleLogOut ()
     {
         console.log(`On se deconnecte`);
         const {navigate} = this.props.navigation;
-        navigate ('HomeScreen');
+        navigate ('StartScreen');
     };
 
     handleLogIn ()
@@ -31,13 +53,36 @@ export default class LoggedIn extends React.Component
     {
         return (
             <View style={styles.container}>
-                <TouchableOpacity style={styles.button_menu_du_jeu} onPress={() => this.handleGameMenu()}>
-                    <Text style={styles.buttonText_Menu_du_jeu}>Menu du jeu</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={styles.button_inscription} onPress={() => this.handleLogOut()}>
-                    <Text style={styles.buttonText_inscription}>DÉCONNEXION</Text>
-                </TouchableOpacity>
-                <StatusBar style="auto" />
+                <ImageBackground source={HomeScreenBackground} resizeMode="cover" style={[styles.background, {width: screenWidth }]}>
+
+                    <View style = {styles.startGameButtonContainer}>
+                        <ImageBackground source={StartGameButton} style = {styles.simpleButtonBackground} resizeMode = 'contain'>
+                            {this.state.fontLoaded && ( // Vérifier si la police est chargée
+                                <View style={styles.simpleButtonTextContainer}>
+                                    <TouchableOpacity onPress={() => this.handleGameMenu()} style={styles.simpleButton}>
+                                        <Text style={styles.simpleButtonText}>Start Game</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </ImageBackground>
+                    </View>
+
+                    <View style = {styles.disconnectButtonContainer}>
+                        <ImageBackground source={DisconnectButton} style = {styles.simpleButtonBackground} resizeMode = 'contain'>
+                            {this.state.fontLoaded && ( // Vérifier si la police est chargée
+                                <View style={styles.simpleButtonTextContainer}>
+                                    <TouchableOpacity onPress={() => this.handleLogOut()} style={styles.simpleButton}>
+                                        <Text style={styles.simpleButtonText}>Quitter</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
+                        </ImageBackground>
+                    </View>
+
+
+                    <StatusBar style="auto" />
+
+                </ImageBackground>
             </View>
         );
     }
@@ -65,46 +110,57 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         marginBottom: 16,
     },
-    button_connexion: {
-        width: '100%',
-        height: 48,
-        backgroundColor: 'blue',
-        borderRadius: 4,
-        alignItems: 'center',
+
+    background: {
+        flex: 1,
+        resizeMode: 'cover',
         justifyContent: 'center',
-    },
-    button_inscription: {
-        width: '100%',
-        height: 48,
-        backgroundColor: 'white',
-        color: "",
-        borderRadius: 4,
         alignItems: 'center',
-        justifyContent: 'center',
     },
-    button_menu_du_jeu: {
+
+    startGameButtonContainer: {
+        marginBottom: -30,
+    },
+
+    disconnectButtonContainer: {
+        marginTop: -40,
+    },
+
+    simpleButtonBackground: {
+        width: 450,
+        height: 200,
+    },
+
+    simpleButtonTextContainer: {
+        position: 'absolute',
         width: '100%',
-        height: 48,
-        backgroundColor: 'green',
-        color: "",
-        borderRadius: 4,
-        alignItems: 'center',
+        height: '100%',
         justifyContent: 'center',
+        alignItems: 'center',
     },
-    buttonText_connexion: {
+
+    simpleButton: {
+        width: 150,
+        height: 80,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 25,
+    },
+
+    startGameText: {
+        fontSize: 28,
         color: '#ffffff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        marginBottom: 30,
+        fontFamily: 'BubbleBobble',
+        textAlign: 'center',
     },
-    buttonText_inscription: {
-        color: 'blue',
-        fontSize: 16,
-        fontWeight: 'bold',
-    },
-    buttonText_Menu_du_jeu: {
+
+    simpleButtonText: {
+        fontSize: 28,
         color: '#ffffff',
-        fontSize: 16,
-        fontWeight: 'bold',
+        marginBottom: 30,
+        fontFamily: 'BubbleBobble',
+        textAlign: 'center',
     },
 
 

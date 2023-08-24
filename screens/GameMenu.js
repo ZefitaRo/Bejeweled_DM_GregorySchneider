@@ -134,7 +134,9 @@ export default class GameMenu extends React.Component {
 
                     if (alignments.length > 0) {
                         // Supprimer les alignements et décaler les images vers le bas
+                        console.log("je dois supprimer et décaler les images vers le bas");
                         this.removeAlignments(alignments);
+                        console.log("j'ai supprimé et décalé");
                     } else {
                         // Annuler la permutation si elle ne forme pas d'alignements
                         this.swapFruits(row, col, selectedFruit.row, selectedFruit.col);
@@ -147,8 +149,9 @@ export default class GameMenu extends React.Component {
     };
 
     removeAlignments = (alignments) => {
+        console.log("je suis dans removeAlignements");
         const gridCopy = JSON.parse(JSON.stringify(this.state.gridData));
-
+        console.log("j'ai copié la grille");
         alignments.forEach(align => {
             align.forEach(cell => {
                 gridCopy[cell.row][cell.col] = { image: null, selected: false };

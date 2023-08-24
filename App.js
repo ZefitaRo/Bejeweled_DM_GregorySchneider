@@ -1,6 +1,7 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import StartScreen from './screens/StartScreen';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
@@ -16,6 +17,7 @@ export default function App() {
 
         <NavigationContainer>
             <Stack.Navigator>
+                <Stack.Screen name="StartScreen" component={StartScreen}/>
                 <Stack.Screen name="HomeScreen" component={HomeScreen}/>
                 <Stack.Screen name="LoginScreen" component={LoginScreen}/>
                 <Stack.Screen name="RegisterScreen" component={RegisterScreen}/>
