@@ -49,8 +49,12 @@ export default class RegisterScreen extends React.Component {
     }
 
     handleSignUp() {
+        //console.log("enter handlesignup");
         const nameError = nameValidator(this.state.name);
+        //console.log(nameError);
         const passwordError = passwordValidator(this.state.password);
+        //console.log(passwordError);
+        //console.log("const passée");
 
         console.log("Name:", this.state.name);
         console.log("Password:", this.state.password);
@@ -85,14 +89,14 @@ export default class RegisterScreen extends React.Component {
                         [this.state.name, this.state.password],
                         (_, { insertId, rows }) => {
                             // L'insertion a réussi
-                            console.log("Data inserted successfully, insertId:", insertId);
+                            //console.log("Data inserted successfully, insertId:", insertId);
 
                             // Interrogation des données juste après l'insertion
                             tx.executeSql(
                                 "SELECT * FROM user",
                                 [],
                                 (_, resultSet) => {
-                                    console.log("Selected data:", resultSet.rows._array);
+                                    //console.log("Selected data:", resultSet.rows._array);
                                 }
                             );
                         },
@@ -109,7 +113,7 @@ export default class RegisterScreen extends React.Component {
                 },
                 () => {
                     // Gestionnaire de succès de transaction
-                    console.log("Navigating to LoginScreen");
+                    //console.log("Navigating to LoginScreen");
                     this.props.navigation.navigate('LoginScreen');
                 }
             );
@@ -118,7 +122,7 @@ export default class RegisterScreen extends React.Component {
 
     handleSignIn ()
     {
-        console.log(`On retourne sur la page de connexion'`);
+
         const {navigate} = this.props.navigation;
         navigate ('LoginScreen');
     };
@@ -163,7 +167,7 @@ export default class RegisterScreen extends React.Component {
                         <ImageBackground source={RegisterButtonImage} style = {styles.loginButtonBackground} resizeMode = 'contain'>
                             {this.state.fontLoaded && ( // Vérifier si la police est chargée
                                 <View style={styles.loginTextContainer}>
-                                    <TouchableOpacity onPress={() => this.handleSignIn()} style={styles.loginButton}>
+                                    <TouchableOpacity onPress={() => this.handleSignUp()} style={styles.loginButton}>
                                         <Text style={styles.loginText}>Inscription</Text>
                                     </TouchableOpacity>
                                 </View>

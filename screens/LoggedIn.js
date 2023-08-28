@@ -1,8 +1,8 @@
 import React from 'react';
 import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, TextInput, TouchableOpacity, Dimensions, ImageBackground} from 'react-native';
+import {StyleSheet, Text, View, TouchableOpacity, Dimensions, ImageBackground} from 'react-native';
 import * as SQLite from 'expo-sqlite'
-import {HomeScreenBackground, LoginButtonImage, MenuPanel, RegisterButtonImage, StartGameButton, DisconnectButton } from "../tools/theme";
+import {HomeScreenBackground, StartGameButton, DisconnectButton } from "../tools/theme";
 import * as Font from 'expo-font';
 
 const screenWidth = Dimensions.get('window').width;
@@ -30,23 +30,20 @@ export default class LoggedIn extends React.Component
 
     handleLogOut ()
     {
-        console.log(`On se deconnecte`);
         const {navigate} = this.props.navigation;
         navigate ('StartScreen');
     };
 
     handleLogIn ()
     {
-        console.log(`On se connecte`);
         const {navigate} = this.props.navigation;
         navigate ('LoggedIn');
     };
 
     handleGameMenu ()
     {
-        console.log(`On se dirige vers le menu du jeu`);
         const {navigate} = this.props.navigation;
-        navigate ('GameMenu');
+        navigate ('GameScreen');
     };
 
     render()

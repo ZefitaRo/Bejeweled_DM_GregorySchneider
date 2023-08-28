@@ -80,7 +80,6 @@ export default class LoginScreen extends React.Component {
 
     handleSignIn ()
     {
-        console.log(`On s'inscrit'`);
         const {navigate} = this.props.navigation;
         navigate ('RegisterScreen');
     };

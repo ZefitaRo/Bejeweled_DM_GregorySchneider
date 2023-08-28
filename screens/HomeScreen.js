@@ -5,6 +5,7 @@ import * as SQLite from 'expo-sqlite';
 import {HomeScreenBackground, LoginButtonImage, RegisterButtonImage} from "../tools/theme";
 import * as Font from 'expo-font';
 
+
 const screenWidth = Dimensions.get('window').width;
 
 
@@ -30,14 +31,12 @@ export default class HomeScreen extends React.Component {
 
     handleSignIn ()
     {
-        console.log(`direction la page de connexion`);
         const {navigate} = this.props.navigation;
         navigate ('LoginScreen');
     };
 
     handleSignUp ()
     {
-        console.log(`direction la page d'inscription`);
         const {navigate} = this.props.navigation;
         navigate ('RegisterScreen');
     };

@@ -36,7 +36,6 @@ export default class StartScreen extends React.Component {
 
     handleSignIn ()
     {
-        console.log(`direction la page de connexion et d'inscritpion`);
         const {navigate} = this.props.navigation;
         navigate ('HomeScreen');
     };

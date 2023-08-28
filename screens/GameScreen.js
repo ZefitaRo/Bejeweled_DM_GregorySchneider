@@ -1,7 +1,7 @@
-import React from 'react';
-import { StatusBar } from 'expo-status-bar';
-import {StyleSheet, Text, View, Image, ScrollView, Dimensions, TouchableOpacity, ImageBackground, Button} from 'react-native';
+import React, { Component } from 'react';
+import {StyleSheet, Text, View, Image, Dimensions, TouchableOpacity, ImageBackground, Button} from 'react-native';
 import { BejeweledBackgroundImage } from "../tools/theme";
+
 
 // Obtient la largeur de l'écran pour calculer la taille des images et l'espace autour de la grille
 const screenWidth = Dimensions.get('window').width;
@@ -20,16 +20,27 @@ const fruitsImages = [
     require('../assets/images/Square_fruits/coco.png'),
 ];
 
-export default class GameMenu extends React.Component {
+export default class GameScreen extends React.Component {
+
     constructor(props) {
         super(props);
         this.state = {
+            // Initialisation de l'état du jeu
             gridData: this.generateGrid(),
             score: 0,
             selectedFruit: null,
+            remainingTime: 10, // 2 minutes en secondes
+            isPaused: false,
+            isGameOver: false,
+            bestScores: [],
         };
     }
 
+    componentDidMount() {
+        this.startTimer(); // Lance le minuteur lorsque le composant est monté
+    }
+
+    // Fonction pour générer la grille de jeu avec des images de fruits aléatoires
     generateGrid = () => {
         const grid = [];
         for (let i = 0; i < 8; i++) {
@@ -43,6 +54,7 @@ export default class GameMenu extends React.Component {
         return grid;
     };
 
+    // Fonction pour échanger la position de deux fruits dans la grille
     swapFruits = (row1, col1, row2, col2) => {
         const gridCopy = JSON.parse(JSON.stringify(this.state.gridData));
         const temp = gridCopy[row1][col1];
@@ -51,6 +63,7 @@ export default class GameMenu extends React.Component {
         this.setState({ gridData: gridCopy });
     };
 
+    // Fonction pour vérifier les alignements horizontaux et verticaux
     checkAlignments = () => {
         const { gridData } = this.state;
         let newScore = this.state.score;
@@ -114,10 +127,11 @@ export default class GameMenu extends React.Component {
         return alignments;
     };
 
+    // Gère l'interaction lorsque l'utilisateur appuie sur un fruit
     handleFruitPress = (row, col) => {
-        const { gridData, selectedFruit, isPaused } = this.state;
+        const { gridData, selectedFruit, isPaused, remainingTime } = this.state;
 
-        if (!isPaused) {
+        if (remainingTime > 0 && !isPaused) {
             if (selectedFruit === null) {
                 // Aucun fruit n'est actuellement sélectionné
                 this.setState({ selectedFruit: { row, col } });
@@ -148,6 +162,7 @@ export default class GameMenu extends React.Component {
         }
     };
 
+    // Fonction pour supprimer les alignements valides et mettre à jour la grille
     removeAlignments = (alignments) => {
         console.log("je suis dans removeAlignements");
         const gridCopy = JSON.parse(JSON.stringify(this.state.gridData));
@@ -189,14 +204,39 @@ export default class GameMenu extends React.Component {
         });
     };
 
+    // Démarrer le minuteur qui diminue le temps restant
+    startTimer = () => {
+        this.timerInterval = setInterval(() => {
+            if (!this.state.isPaused) {
+                this.setState(prevState => ({
+                    remainingTime: prevState.remainingTime - 1
+                }), () => {
+                    if (this.state.remainingTime <= 0) {
+                        clearInterval(this.timerInterval);
+                        // Appel à la fonction pour gérer la fin du jeu ici
+                        this.handleGameOver();
+                    }
+                });
+            }
+        }, 1000); // Update every second
+    };
+
+    // Réinitialiser l'état du jeu pour commencer une nouvelle partie
     handleNewGame = () => {
         this.setState({
             gridData: this.generateGrid(),
             score: 0,
             selectedFruit: null,
-        });
+            isGameOver: false,
+            remainingTime: 10, // Reset the timer
+            },
+            () => {
+                this.startTimer(); // Start the timer for the new game
+            }
+        );
     };
 
+    // Mettre en pause ou reprendre le jeu
     handlePausePress = () => {
         // Mettre en pause ou reprendre le jeu
         this.setState((prevState) => ({
@@ -204,41 +244,90 @@ export default class GameMenu extends React.Component {
         }));
     };
 
+    // Gérer la fin du jeu en affichant le score final et les meilleurs scores
+    handleGameOver = () => {
+        clearInterval(this.timerInterval);
+
+        // Ajouter le score actuel à la liste des meilleurs scores
+        const newBestScores = [...this.state.bestScores, this.state.score];
+
+        // Triez les meilleurs scores par ordre décroissant
+        newBestScores.sort((a, b) => b - a);
+
+        // Limitez le tableau à 3 meilleurs scores
+        const limitedBestScores = newBestScores.slice(0, 3);
+
+        this.setState({
+            bestScores: limitedBestScores,
+            isGameOver: true,
+        });
+    };
 
     render() {
-        const { isPaused } = this.state;
+        const { isPaused, remainingTime } = this.state;
 
         return (
             <View style={styles.container}>
                 <ImageBackground source={BejeweledBackgroundImage} resizeMode = "cover" style = {styles.background}>
-                <View style={styles.newGameContainer}>
-                    <Button title="New Game" onPress={this.handleNewGame} disabled={isPaused} />
-                </View>
-                <View style={styles.PauseContainer}>
-                    <Button title={this.state.isPaused ? "Resume" : "Pause"} onPress={this.handlePausePress} />
-                </View>
-                <Text style={styles.scoreText}>Score: {this.state.score}</Text>
-                <View style={styles.gridContainer}>
-                    {this.state.gridData.map((row, rowIndex) => (
-                        <View key={rowIndex} style={styles.row}>
-                            {row.map((fruit, columnIndex) => (
-                                <TouchableOpacity
-                                    key={columnIndex}
-                                    onPress={() => this.handleFruitPress(rowIndex, columnIndex)}
-                                >
-                                    <Image
-                                        source={fruit.image}
-                                        style={[
-                                            styles.fruits,
-                                            { width: imageWidth, height: imageWidth, borderWidth: fruit.selected ? 2 : 0, borderColor: 'blue', opacity: isPaused ? 0 : 1 },
-                                        ]}
-                                    />
-                                </TouchableOpacity>
+
+                    <View style={styles.newGameContainer}>
+                        <Button title="New Game" onPress={this.handleNewGame} disabled={isPaused} />
+                    </View>
+
+                    <View style={styles.PauseContainer}>
+                        <Button title={this.state.isPaused ? "Resume" : "Pause"} onPress={this.handlePausePress} />
+                    </View>
+
+                    <Text style={styles.scoreText}>Score: {this.state.score}</Text>
+
+                    <Text style={styles.timerText}>Time left: {Math.floor(remainingTime / 60)}:{remainingTime % 60 < 10 ? '0' : ''}{remainingTime % 60}</Text>
+
+                    <View style={styles.gridContainer}>
+                        {this.state.gridData.map((row, rowIndex) => (
+                            <View key={rowIndex} style={styles.row}>
+                                {row.map((fruit, columnIndex) => (
+                                    <TouchableOpacity
+                                        key={columnIndex}
+                                        onPress={() => this.handleFruitPress(rowIndex, columnIndex)}
+                                        disabled={this.state.remainingTime <= 0} // Désactiver les interactions si le temps est écoulé
+                                    >
+                                        <Image
+                                            source={fruit.image}
+                                            style={[
+                                                styles.fruits,
+                                                { width: imageWidth, height: imageWidth, borderWidth: fruit.selected ? 2 : 0, borderColor: 'blue', opacity: isPaused ? 0 : 1 },
+                                            ]}
+                                        />
+                                    </TouchableOpacity>
+                                ))}
+                            </View>
+                        ))}
+                    </View>
+
+                    {this.state.isGameOver && (
+                        <View style={styles.gameOverBanner}>
+                            <Text style={styles.gameOverText}>Partie terminée</Text>
+
+                            <Text></Text>
+
+                            <Text style={styles.gameOverScoreText}>Votre score est de {this.state.score}</Text>
+
+                            <Text></Text>
+
+                            <Text style={styles.gameOverBestScores}>Meilleurs scores :</Text>
+                            {this.state.bestScores.map((score, index) => (
+                                <Text key={index} style={styles.bestScore}>
+                                    {index + 1}. {score}
+                                </Text>
                             ))}
+
+                            <View style={styles.newGameContainer}>
+                                <Button title="NEW GAME" onPress={this.handleNewGame} />
+                            </View>
                         </View>
-                    ))}
-                </View>
-            </ImageBackground>
+                    )}
+
+                </ImageBackground>
             </View>
         );
     }
@@ -250,39 +339,91 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+
     gridContainer: {
         marginLeft: 10,
         marginRight: 10,
         marginTop: 10,
     },
+
     row: {
         flexDirection: 'row',
     },
+
     fruits: {
         margin: 1,
     },
+
     scoreText: {
         fontSize: 20,
         fontWeight: 'bold',
         marginBottom: 10,
         textAlign: 'center',
     },
+
     newGameContainer: {
         marginBottom: 10,
         marginTop: 30,
         alignSelf: 'center',
         width: 150,
     },
+
     PauseContainer: {
         marginBottom: 10,
         marginTop: 30,
         alignSelf: 'center',
         width: 150,
     },
+
     background: {
         flex: 1,
         resizeMode: 'cover',
         justifyContent: 'center',
         alignItems: 'center',
+    },
+
+    timerText: {
+        fontSize: 18,
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+
+    gameOverBanner: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        width: '100%', // Occupe toute la largeur de l'écran
+        height: '100%', // Occupe toute la hauteur de l'écran
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    },
+    gameOverText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+
+    gameOverScoreText: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+
+    gameOverBestScores: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        color: 'white',
+        textAlign: 'center',
+    },
+
+    bestScore: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+
+
     },
 });
